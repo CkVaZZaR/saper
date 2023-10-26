@@ -272,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
                 layout.addView(cells[i][j]);
             }
         }
+  // камент 2
 //         камент 1
 //        for (int i = 0; i != MINESCONST; ++i) {
 //            cells[mineindex[i][0]][mineindex[i][1]].setBackgroundColor(Color.BLUE);
