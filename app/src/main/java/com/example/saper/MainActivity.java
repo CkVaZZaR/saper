@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mines = findViewById(R.id.mines);
-        mines.setText("" + MINESCONST + " / " + MinesCurren);
+        mines.setText(MinesCurren + " / " + MINESCONST + " \uD83D\uDEA9");
         generate();
     }
 
@@ -87,10 +87,16 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             cells[i][j].setBackgroundColor(0xC8fafafa);
                         }
-                        if (minec[i][j] != 0) {
+                        if (minec[i][j] == 0) {
+                            cells[i][j].setText("");
+                        } else {
                             cells[i][j].setText("" + minec[i][j]);
                         }
                         mineclick[i][j] = true;
+                        if (mineclicklong[i][j]) {
+                            mineclicklong[i][j] = false;
+                            ++MinesCurren;
+                        }
                         openZeros(i, j);
                     }
                 } else if(!(minecoords[i][j])) {
@@ -99,13 +105,20 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         cells[i][j].setBackgroundColor(0xC8fafafa);
                     }
-                    if (minec[i][j] != 0) {
+                    if (minec[i][j] == 0) {
+                        cells[i][j].setText("");
+                    } else {
                         cells[i][j].setText("" + minec[i][j]);
                     }
                     mineclick[i][j] = true;
+                    if (mineclicklong[i][j]) {
+                        mineclicklong[i][j] = false;
+                        ++MinesCurren;
+                    }
                 }
             }
         }
+        mines.setText(MinesCurren + " / " + MINESCONST + " \uD83D\uDEA9");
     }
 
     public void generate() {
@@ -164,10 +177,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        for (int i = 0; i != MINESCONST; ++i) {
-            cells[mineindex[i][0]][mineindex[i][1]].setBackgroundColor(Color.GREEN);
-        }
-
         for (int i = 0; i < HEIGHT; ++i) {
             for (int j = 0; j < WIDTH; ++j) {
                 if ((i + j) % 2 == 0) {
@@ -210,27 +219,51 @@ public class MainActivity extends AppCompatActivity {
                                     v.setBackgroundColor(0xC8fafafa);
                                 }
                                 mineclick[finalI][finalJ] = true;
+                                if (mineclicklong[finalI][finalJ]) {
+                                    mineclicklong[finalI][finalJ] = false;
+                                    ++MinesCurren;
+                                }
                             }
-
                         }
+                        mines.setText(MinesCurren + " / " + MINESCONST + " \uD83D\uDEA9");
                     }
                 });
                 cells[i][j].setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        if (!mineclicklong[finalI][finalJ]){
-                            --MinesCurren;
-                            mineclicklong[finalI][finalJ] = true;
-                            cells[finalI][finalJ].setText("\uD83D\uDEA9");
+                        if (!mineclicklong[finalI][finalJ]) {
+                            if (MinesCurren > 0) {
+                                if (!mineclick[finalI][finalJ]) {
+                                    --MinesCurren;
+                                    mineclicklong[finalI][finalJ] = true;
+                                    cells[finalI][finalJ].setText("\uD83D\uDEA9");
+                                }
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Not enough flags!", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
                             ++MinesCurren;
                             mineclicklong[finalI][finalJ] = false;
                             cells[finalI][finalJ].setText("");
                         }
-                        mines.setText("" + MINESCONST + " / " + MinesCurren);
+                        mines.setText(MinesCurren + " / " + MINESCONST + " \uD83D\uDEA9");
 
                         if (MinesCurren == 0) {
-                            Toast.makeText(getApplicationContext(), "You win!", Toast.LENGTH_SHORT).show();
+                            boolean flag = true;
+                            for (int x = 0; x != 15; ++ x) {
+                                for (int y = 0; y != 10; ++y) {
+                                    if (mineclicklong[x][y] != minecoords[x][y]) {
+                                        flag = false;
+                                        break;
+                                    }
+                                    if (!flag) {
+                                        break;
+                                    }
+                                }
+                            }
+                            if (flag) {
+                                Toast.makeText(getApplicationContext(), "You win!", Toast.LENGTH_SHORT).show();
+                            }
                         }
                         return true;
                     }
@@ -239,5 +272,10 @@ public class MainActivity extends AppCompatActivity {
                 layout.addView(cells[i][j]);
             }
         }
+
+//        for (int i = 0; i != MINESCONST; ++i) {
+//            cells[mineindex[i][0]][mineindex[i][1]].setBackgroundColor(Color.BLUE);
+//        }
+
     }
 }
