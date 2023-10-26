@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView mines;
 
-    final int MINESCONST = random.nextInt(37 - 25) + 25;
+    final int MINESCONST = random.nextInt(30 - 25) + 25;
 
     boolean[][] minecoords = new boolean[15][10];
 
